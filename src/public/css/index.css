@@ -1,0 +1,12 @@
+body{
+    height: 100vh;
+}
+.header__content{
+    height: 10%;
+}
+.body__content{
+    height: 85%;
+}
+.footer__content{
+    height: 5%;
+}
