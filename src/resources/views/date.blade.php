@@ -76,6 +76,7 @@
                         <form class="py-2" action="/test" method="post">
                             @csrf
                             <input type="hidden" name="name" value="{{$user->user_id}}">
+                            <input type="hidden" name="date" value="{{$date}}">
                             <p class="mx-8">勤務開始：</p><input class="w-1/2 mx-auto my-4" type="datetime-local" name="startTime">
                             <p class="mx-8">勤務終了：</p><input class="w-1/2 mx-auto my-4" type="datetime-local" name="endTime">
                             <input class="px-4 py-2 mx-auto my-8 w-1/4 bg-blue-500 rounded-md text-white" type="submit" value="編集">

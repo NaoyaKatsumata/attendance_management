@@ -94,16 +94,12 @@ class ManagementController extends Controller
     public function search(Request $request){
         $requestDate=$request->date;
         if($request->input('previous')=='＜'){
-            // $date=date('y-m-d',strtotime($date.'-1 day'));
             $date=new Carbon($requestDate);
             $date->addDays(-1)->toDateString();
         }elseif($request->input('next')=='＞'){
             $date=new Carbon($requestDate);
             $date->addDays(+1)->toDateString();
         }
-        // $users=Attend::where('attends.date','=',$date)
-        // ->join('users','users.id','=','attends.user_id')
-        // ->join('break_times','attends.user_id','=','break_times.user_id')
         $nextDate=new Carbon($date);
         $nextDate->addDays(1)->toDateString();
         $users=Attend::whereBetween('work_start',[$date,$nextDate])
@@ -135,26 +131,32 @@ class ManagementController extends Controller
     public function test(Request $request){
         $name=$request->name;
         $attend=Attend::where('user_id','=',$name)
-            ->orderBy('work_start','desc')
-            ->first();
-            $form=[];
-            $startTime=$request->startTime;
-            $endTime=$request->endTime;
-            // dd($request,$name);
-            if(isset($startTime)){
-                $form=$form+array('work_start'=>$startTime);
-            }
-            if(isset($endTime)){
-                $form=$form+array('work_end'=>$endTime);
-            }
-            if(isset($startTime) or isset($endTime)){
-                $form=$form+array('status'=>0);
-            }
-            // dd($form);
-            if(!(is_null($form))){
-                $attend->update($form);
-            }
-        // dd($attend,$request,$form,$name,$endTime);
-        return redirect('/attendance');
+        ->orderBy('work_start','desc')
+        ->first();
+        $form=[];
+        $startTime=$request->startTime;
+        $endTime=$request->endTime;
+        $date=Carbon::now();
+        if(isset($startTime)){
+            $form=$form+array('work_start'=>$startTime);
+            $date=new Carbon($startTime);
+        }
+        if(isset($endTime)){
+            $form=$form+array('work_end'=>$endTime);
+        }
+        if(isset($startTime) or isset($endTime)){
+            $form=$form+array('status'=>0);
+        }
+        if(!(is_null($form))){
+            $attend->update($form);
+        }
+        $date=$date->isoFormat('YYYY-M-D');
+        $nextDate=new Carbon($date);
+        $nextDate->addDays(+1)->toDateString();
+        $users=Attend::whereBetween('work_start',[$date,$nextDate])
+        ->join('users','users.id','=','attends.user_id')
+        ->Paginate(5);
+        // dd($date,$nextDate,$users);
+        return view('date',compact('date','users'));
     }
 }
