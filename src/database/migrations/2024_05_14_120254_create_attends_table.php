@@ -22,6 +22,7 @@ return new class extends Migration
             $table->timestamp('break_time_end')->nullable();
             $table->string('break_total_time')->nullable();
             $table->Integer('status')->default(0);
+            $table->timestamps();
         });
     }
 

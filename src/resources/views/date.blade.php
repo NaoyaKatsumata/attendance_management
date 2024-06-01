@@ -73,7 +73,7 @@
                 <div class="block w-full h-full bg-black/70 absolute top-0 left-0">
                     <div class="flex flex-col mx-auto my-32 bg-white w-[40%] h-1/2">
                         <a class="text-right px-4 py-2" href="#">✖︎</a>
-                        <form class="py-2" action="/test" method="post">
+                        <form class="py-2" action="/update" method="post">
                             @csrf
                             <input type="hidden" name="name" value="{{$user->user_id}}">
                             <input type="hidden" name="date" value="{{$date}}">

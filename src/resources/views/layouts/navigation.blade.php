@@ -3,7 +3,7 @@
     <div class="h-[100%] content-center mx-auto">
         <div class="h-[100%] flex justify-between">
                 <div class="content-center h-full">
-                    <h1 class="text-2xl px-5">Atte</h1>
+                    <a href="/" class="text-2xl px-5">Atte</a>
                 </div>
             <ul class="flex content-center ">
                 <li class="content-center px-5"><a href="/">ホーム</li>

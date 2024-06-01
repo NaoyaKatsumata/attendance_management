@@ -20,7 +20,7 @@
             <div class="h-[100%] content-center mx-auto">
                 <div class="h-[100%] flex justify-between">
                     <div class="content-center h-full">
-                        <h1 class="text-2xl p-5">Atte</h1>
+                        <a href="/login" class="text-2xl p-5">Atte</a>
                     </div>
                 </div>
             </div>

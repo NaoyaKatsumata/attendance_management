@@ -55,7 +55,9 @@ class ManagementController extends Controller
                 $form=[
                     'user_id'=>$userId->id,
                     'work_start'=> $now,
-                    'status'=>1
+                    'status'=>1,
+                    'created_at'=>$now,
+                    'updated_at'=>$now
                 ];
                 Attend::create($form);
             }
@@ -63,14 +65,16 @@ class ManagementController extends Controller
         }elseif($request->input('finish')=='勤務終了'){
                 $form=[
                     'work_end'=>$now,
-                    'status'=>0
+                    'status'=>0,
+                    'updated_at'=>$now
                 ];
                 $attend->update($form);
             return redirect('/');
         }elseif($request->input('breakStart')=='休憩開始'){
             $form=[
                 'break_time_start'=>$now,
-                'status'=>2
+                'status'=>2,
+                'updated_at'=>$now
             ];
             $attend->update($form);
             return redirect('/');
@@ -84,7 +88,8 @@ class ManagementController extends Controller
             $form=[
                 'break_time_end'=>$now,
                 'break_total_time'=>$totalBreakTime,
-                'status'=>3
+                'status'=>3,
+                'updated_at'=>$now
             ];
             $attend->update($form);
             return redirect('/');
@@ -121,14 +126,15 @@ class ManagementController extends Controller
             $form=[
                     'work_start'=> $now,
                     'work_end'=>null,
-                    'status'=>1
+                    'status'=>1,
+                    'updated_at'=>$now
                 ];
                 $attend->update($form);
         }
         return redirect('/');
     }
 
-    public function test(Request $request){
+    public function update(Request $request){
         $name=$request->name;
         $attend=Attend::where('user_id','=',$name)
         ->orderBy('work_start','desc')
@@ -146,6 +152,7 @@ class ManagementController extends Controller
         }
         if(isset($startTime) or isset($endTime)){
             $form=$form+array('status'=>0);
+            $form=$form+array('updated_at'=>$now);
         }
         if(!(is_null($form))){
             $attend->update($form);
