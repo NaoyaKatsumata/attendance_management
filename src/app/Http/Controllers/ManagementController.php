@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Attend;
 use App\Models\User;
+use App\Models\BreakTime;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -15,15 +16,21 @@ class ManagementController extends Controller
         $id=Auth::user()->id;
         $date = Carbon::now()->toDateString();
         $nextDate=Carbon::now()->addDays(1)->toDateString();
-        $status=Attend::where('user_id','=',$id)
-        ->orderBy('work_start','desc')->first();
-        //  dd($date,$nextDate,$status,$id);
-        if(!(isset($status))){
-            $status=0;
-        }else{
-            $status=$status->status;
-        }
-        return view('stamp',['status'=>$status]);
+        $workStartStatus=Attend::select('work_start')
+        ->where([['user_id','=',$id],['work_start','<>',null],['work_start','>',$date],['work_start','<',$nextDate]])
+        ->get()
+        ->toArray();
+        $workEndStatus=Attend::select('work_end')
+        ->where([['user_id','=',$id],['work_end','<>',null],['work_start','>',$date],['work_start','<',$nextDate]])
+        ->get()
+        ->toArray();
+        $breakStatus=BreakTime::where([['user_id','=',$id],['start_time','>',$date],['start_time','<',$nextDate]])
+        ->orderBy('count','desc')
+        ->first();
+        $workStartCount=count($workStartStatus);
+        $workEndCount=count($workEndStatus);
+        // dd($workStartCount,$workEndCount,$breakStatus);
+        return view('stamp',compact('workStartCount','workEndCount','breakStatus'));
     }
 
     public function viewDate(){
@@ -32,8 +39,11 @@ class ManagementController extends Controller
         $users=Attend::whereBetween('work_start',[$date,$nextDate])
         ->join('users','users.id','=','attends.user_id')
         ->Paginate(5);
-        
-        return view('date',['date'=>$date,'users'=>$users]);
+        $breakTimes=BreakTime::whereBetween('start_time',[$date,$nextDate])
+        ->orderBy('count')
+        ->get();
+        // dd($users,$breakTimes);
+        return view('date',['date'=>$date,'users'=>$users,'breakTimes'=>$breakTimes]);
     }
 
 
@@ -55,7 +65,6 @@ class ManagementController extends Controller
                 $form=[
                     'user_id'=>$userId->id,
                     'work_start'=> $now,
-                    'status'=>1,
                     'created_at'=>$now,
                     'updated_at'=>$now
                 ];
@@ -65,33 +74,45 @@ class ManagementController extends Controller
         }elseif($request->input('finish')=='勤務終了'){
                 $form=[
                     'work_end'=>$now,
-                    'status'=>0,
                     'updated_at'=>$now
                 ];
                 $attend->update($form);
             return redirect('/');
         }elseif($request->input('breakStart')=='休憩開始'){
+            // $maxCount=BreakTime::where([['user_id','=',$userId],['input_time','<',$nextDate],['input_time','>',$date],['mode','=',0]])->get();
+            $maxCount=BreakTime::where('user_id','=',$userId->id)
+            ->whereBetween('start_time',[$date,$nextDate])
+            ->max('count');
+            // dd($nextDate,$date,$userId,$maxCount);
+            if(is_null($maxCount)){
+                $maxCount=1;
+            }else{
+                $maxCount = $maxCount + 1;
+            }
+            // dd($maxCount);
             $form=[
-                'break_time_start'=>$now,
-                'status'=>2,
-                'updated_at'=>$now
+                'user_id'=>$userId->id,
+                'count'=>$maxCount,
+                'start_time'=>$now,
             ];
-            $attend->update($form);
+            BreakTime::create($form);
             return redirect('/');
         }elseif($request->input('breakEnd')=='休憩終了'){
-            // dd($attend);
-            $breakStart=new Carbon($attend->break_time_start);
-            $totalBreakTime=(int)$breakStart->diffInSeconds($now);
-            if(!(is_null($attend->break_time_end))){
-                $totalBreakTime=(int)$attend->break_total_time + $totalBreakTime;
+            $maxCount=BreakTime::where('user_id','=',$userId->id)
+            ->whereBetween('start_time',[$date,$nextDate])
+            ->max('count');
+            if(is_null($maxCount)){
+                $maxCount=1;
             }
+            $user=BreakTime::where('user_id','=',$userId->id)
+            ->where('count','=',$maxCount)
+            ->whereBetween('start_time',[$date,$nextDate])
+            ->first();
             $form=[
-                'break_time_end'=>$now,
-                'break_total_time'=>$totalBreakTime,
-                'status'=>3,
-                'updated_at'=>$now
+                'end_time'=>$now,
             ];
-            $attend->update($form);
+            // BreakTime::create($form);
+            $user->update($form);
             return redirect('/');
         };
     }
@@ -111,7 +132,12 @@ class ManagementController extends Controller
         ->join('users','users.id','=','attends.user_id')
         ->Paginate(5);
         $date=$date->isoFormat('YYYY-M-D');
-        return view('date',compact('date','users'));
+
+        $breakTime=BreakTime::where([['user_id','=',$id],['start_time','>',$date],['start_time','<',$nextDate]])
+        ->orderBy('count')
+        ->get();
+
+        return view('date',compact('date','users','$breakTime'));
     }
 
     public function confirm(Request $request){
@@ -145,14 +171,14 @@ class ManagementController extends Controller
         $date=Carbon::now();
         if(isset($startTime)){
             $form=$form+array('work_start'=>$startTime);
-            $date=new Carbon($startTime);
+            // $date=new Carbon($startTime);
         }
         if(isset($endTime)){
             $form=$form+array('work_end'=>$endTime);
         }
         if(isset($startTime) or isset($endTime)){
             $form=$form+array('status'=>0);
-            $form=$form+array('updated_at'=>$now);
+            $form=$form+array('updated_at'=>$date);
         }
         if(!(is_null($form))){
             $attend->update($form);

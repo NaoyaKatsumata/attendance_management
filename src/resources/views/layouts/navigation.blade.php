@@ -1,8 +1,8 @@
 <nav x-data="{ open: false }" class="h-[100%] bg-white border-b border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="h-[100%] content-center mx-auto">
-        <div class="h-[100%] flex justify-between">
-                <div class="content-center h-full">
+        <div class="h-[100%] flex justify-between content-center items-center h-full">
+                <div>
                     <a href="/" class="text-2xl px-5">Atte</a>
                 </div>
             <ul class="flex content-center ">

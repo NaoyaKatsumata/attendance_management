@@ -19,8 +19,8 @@
         <header class="h-[10%]">
             <div class="h-[100%] content-center mx-auto">
                 <div class="h-[100%] flex justify-between">
-                    <div class="content-center h-full">
-                        <a href="/login" class="text-2xl p-5">Atte</a>
+                    <div class="flex content-center items-center h-full">
+                        <a href="/login" class="text-2xl text-center px-5">Atte</a>
                     </div>
                 </div>
             </div>
@@ -30,6 +30,9 @@
                 {{ $slot }}
             </div>
         </div>
-        <footer class="h-[10%] text-center content-center">Atte,inc.</footer>
+        <footer class="h-[10%] flex content-center items-center">
+            <p class="mx-auto">Atte,inc.</p>
+        </footer>
+        
     </body>
 </html>

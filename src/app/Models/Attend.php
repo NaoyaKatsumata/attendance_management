@@ -9,6 +9,6 @@ class Attend extends Model
 {
     use HasFactory;
 
-    protected $fillable=['user_id','work_start','work_end','break_time_start','break_time_end','break_total_time','status','created_at','updated_at'];
+    protected $fillable=['user_id','work_start','work_end','created_at','updated_at'];
     public $timestamps = false; // 追加
 }

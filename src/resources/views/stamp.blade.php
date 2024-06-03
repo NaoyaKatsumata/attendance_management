@@ -8,7 +8,7 @@
                 @csrf
                 <div class="flex justify-center my-10">
                     <input type="hidden" name="name" value="{{ Auth::user()->name }}">
-                    @if($status==0)
+                    @if($workStartCount==$workEndCount)
                         <input class="bg-white mx-5 py-12 px-28" type="submit" name="attendance" value="勤務開始">
                         <input class="bg-gray-200 text-slate-500 mx-5 py-12 px-28" type="submit" name="finish" value="勤務終了" disabled>
                     @else
@@ -18,20 +18,22 @@
                 </div>
                 <div class="flex justify-center my-10">
                     <input type="hidden" name="name" value="{{ Auth::user()->name }}">
-                    @if($status==0)
-                        <input class="bg-gray-200 text-slate-500 mx-5 py-12 px-28" type="submit" name="breakStart" value="休憩開始">
-                        <input class="bg-gray-200 text-slate-500 mx-5 py-12 px-28" type="submit" name="breakEnd" value="休憩終了">
-                    @elseif($status==2)
+                    @if($workStartCount==$workEndCount)
                     <input class="bg-gray-200 text-slate-500 mx-5 py-12 px-28" type="submit" name="breakStart" value="休憩開始" disabled>
-                        <input class="bg-white mx-5 py-12 px-28" type="submit" name="breakEnd" value="休憩終了">
-
-                    @elseif($status==1 or $status==3)
-                        <input class="bg-white mx-5 py-12 px-28" type="submit" name="breakStart" value="休憩開始">
-                        <input class="bg-gray-200 text-slate-500 mx-5 py-12 px-28" type="submit" name="breakEnd" value="休憩終了" disabled>
+                    <input class="bg-gray-200 text-slate-500 mx-5 py-12 px-28" type="submit" name="breakEnd" value="休憩終了" disabled>
+                    @elseif(!($workStartCount==$workEndCount) and ((empty($breakStatus->start_time) and empty($breakStatus->end_time)) or ((!(empty($breakStatus->start_time)) and !(empty($breakStatus->end_time))))))
+                    <input class="bg-white mx-5 py-12 px-28" type="submit" name="breakStart" value="休憩開始" >
+                    <input class="bg-gray-200 text-slate-500 mx-5 py-12 px-28" type="submit" name="breakEnd" value="休憩終了" disabled>
+                    @elseif(!($workStartCount==$workEndCount) and !(is_null($breakStatus->start_time)) and is_null($breakStatus->end_time))
+                    <input class="bg-gray-200 text-slate-500 mx-5 py-12 px-28" type="submit" name="breakStart" value="休憩開始" disabled>
+                    <input class="bg-white mx-5 py-12 px-28" type="submit" name="breakEnd" value="休憩終了">
                     @endif
+                    
                 </div>
             </form>
         </div>
     </div>
-    <footer class="h-[10%] bg-white text-center content-center footer__content">Atte,inc.</footer>
+    <footer class="h-[10%] bg-white flex content-center items-center">
+        <p class="mx-auto">Atte,inc.</p>
+    </footer>
 </x-app-layout>
