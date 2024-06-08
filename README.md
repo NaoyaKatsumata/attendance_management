@@ -21,7 +21,9 @@
     <li>DB:MySQL</li>
 </ul>
 <h1>テーブル設計</h1>
+<p>attends_table</p>
 <img src="/attends_table.png">
+<p>break_times_table</p>
 <img src="/break_times_table.png">
+<p>users_table</p>
 <img src="/users_table.png">
-# attendance_management
