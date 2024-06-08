@@ -27,3 +27,40 @@
 <img src="/break_times_table.png">
 <p>users_table</p>
 <img src="/users_table.png">
+<h1>ER図</h1>
+<img src="/ER_attends.png">
+<img src="/ER_breakTimes.png">
+<h1>環境構築</h1>
+<ul>
+    <li>任意のフォルダに移動</li>
+    <li>
+        フォルダをローカルに保存<br>
+        git@github.com:NaoyaKatsumata/attendance_management.git
+    </li>
+    <li>
+        docker-composeをビルド<br>
+        docker-compose up -d --build
+    </li>
+    <li>
+        composerのインストール<br>
+        docker-compose exec php bash
+        composer install
+    </li>
+    <li>
+        .envファイルの作成<br>
+        cp .env.example .env<br>
+        .envファイルの書き換え<br>
+        DB_CONNECTION=mysql
+        DB_HOST=mysql
+        DB_PORT=3306
+        DB_DATABASE=任意のDB名
+        DB_USERNAME=任意のユーザ名
+        DB_PASSWORD=任意のパスワード
+    </li>
+    <li>
+        dockerスタート
+    </li>
+    <li>
+        localhostへアクセス
+    </li>
+</ul>
