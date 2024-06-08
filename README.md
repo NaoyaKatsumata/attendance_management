@@ -23,4 +23,4 @@
 <h1>テーブル設計</h1>
 <img src="/attends_table.png">
 <img src="/break_times_table.png">
-<img src="/users_table.png"># attendance_management
+<img src="/users_table.png">

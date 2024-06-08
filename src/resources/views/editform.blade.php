@@ -21,15 +21,12 @@
                 <form class="flex" action="/edit" method="post">
                     @csrf
                     <div class="w-full flex border-b border-black" >
-                        @php
-                        $strTime=$attend->work_end;
-                        $strTime = substr($strTime, 0, -3);
-                        @endphp
+                        
                         <p class="w-[30%] flex items-center px-4 ">勤務終了</p>
                         <input type="hidden" name="flg" value="1">
                         <input type="hidden" name="id" value="{{$attend->user_id}}">
                         <input type="hidden" name="workStart" value="{{$attend->work_start}}">
-                        <input type="datetime-local" class="w-[50%] px-2 my-2" name="workEnd" value="{{$strTime}}" step=60>
+                        <input type="datetime-local" class="w-[50%] px-2 my-2" name="workEnd" value="{{$attend->work_end}}" step=60>
                         <input type="submit" class="mx-auto my-2 px-4 bg-blue-400 rounded-md text-white" name="" value="更新">
                     </div>
                 </form>
