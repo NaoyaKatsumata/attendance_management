@@ -132,12 +132,11 @@ class ManagementController extends Controller
         ->join('users','users.id','=','attends.user_id')
         ->Paginate(5);
         $date=$date->isoFormat('YYYY-M-D');
-
-        $breakTime=BreakTime::where([['user_id','=',$id],['start_time','>',$date],['start_time','<',$nextDate]])
+        $breakTimes=BreakTime::whereBetween('start_time',[$date,$nextDate])
         ->orderBy('count')
         ->get();
-
-        return view('date',compact('date','users','$breakTime'));
+        // dd($breakTime);
+        return view('date',['date'=>$date,'users'=>$users,'breakTimes'=>$breakTimes]);
     }
 
     public function confirm(Request $request){
@@ -191,5 +190,85 @@ class ManagementController extends Controller
         ->Paginate(5);
         // dd($date,$nextDate,$users);
         return view('date',compact('date','users'));
+    }
+
+    public function editform(Request $request){
+        $id=$request->userId;
+        $date=$request->date;
+        $date=new Carbon($date);
+        $nextDate=new Carbon($date);
+        $nextDate->addDays(1)->toDateString();
+        $attends=Attend::where('user_id','=',$id)
+        ->whereBetween('work_start',[$date,$nextDate])
+        ->get();
+        $breakTimes=BreakTime::whereBetween('start_time',[$date,$nextDate])
+        ->where('user_id','=',$id)
+        ->orderBy('count')
+        ->get();
+        // dd($attends,$breakTimes,$date,$nextDate,$request);
+        return view('editform',['id'=>$id,'attends'=>$attends,'breakTimes'=>$breakTimes,'date'=>$date,'nextDate'=>$nextDate]);
+    }
+
+    public function edit(Request $request){
+        if($request->flg<=1){
+            $workStart=$request->workStart;
+            $id=$request->id;
+            $date=new Carbon($workStart);
+            $strDate=$date->toDateString();
+            $nextDate=new Carbon($date);
+            $nextDate->addDays(+1)->toDateString();
+            $now=Carbon::now();
+            $attend=Attend::where('user_id','=',$id)
+            ->whereBetween('work_start',[$strDate,$nextDate])
+            ->first();
+            if($request->flg==0){
+                $form=[
+                    'work_start'=> $workStart,
+                    'updated_at'=>$now
+                ];
+                $attend->update($form);
+            }else{
+                $form=[
+                    'work_end'=> $request->workEnd,
+                    'updated_at'=>$now
+                ];
+                $attend->update($form);
+            }
+            $date=$date->isoFormat('YYYY-M-D');
+        }else{
+            $breakStart=$request->breakStart;
+            $id=$request->id;
+            $date=new Carbon($breakStart);
+            $strDate=$date->toDateString();
+            $nextDate=new Carbon($date);
+            $nextDate->addDays(+1)->toDateString();
+            $now=Carbon::now();
+            $breakTime=BreakTime::where('user_id','=',$id)
+            ->where('count','=',$request->count)
+            ->whereBetween('start_time',[$strDate,$nextDate])
+            ->first();
+            if($request->flg==2){
+                $form=[
+                    'start_time'=> $breakStart,
+                    'updated_at'=>$now
+                ];
+                $breakTime->update($form);
+            }else{
+                $form=[
+                    'end_time'=> $request->breakEnd,
+                    'updated_at'=>$now
+                ];
+                $breakTime->update($form);
+            }
+            $date=$date->isoFormat('YYYY-M-D');
+        }
+        $users=Attend::whereBetween('work_start',[$strDate,$nextDate])
+        ->join('users','users.id','=','attends.user_id')
+        ->Paginate(5);
+        
+        $breakTimes=BreakTime::whereBetween('start_time',[$strDate,$nextDate])
+        ->orderBy('count')
+        ->get();
+        return view('date',['date'=>$date,'users'=>$users,'breakTimes'=>$breakTimes]);//
     }
 }

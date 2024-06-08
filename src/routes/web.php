@@ -33,5 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/update', [ManagementController::class, 'update']);
     Route::post('/store',[ManagementController::class,'store']);
     Route::post('/confirm',[ManagementController::class,'confirm']);
+    Route::post('/editform',[ManagementController::class,'editform']);
+    Route::post('/edit',[ManagementController::class,'edit']);
 });
 require __DIR__.'/auth.php';

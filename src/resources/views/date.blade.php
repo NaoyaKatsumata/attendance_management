@@ -34,9 +34,15 @@
                     $id=$user->user_id;
                     $name=$user->name;
                     $start=$user->work_start;
+                    $start=strtotime($start);
+                    $start=date("H:i:s",$start);
                     $end=$user->work_end;
+                    $end=strtotime($end);
+                    $end=date("H:i:s",$end);
                     $workTime=strtotime($end)-strtotime($start);
                     $diffTime=0;
+                    $arr_start=[];
+                    $arr_end=[];
                     foreach($breakTimes as $breakTime){
                         if($id==$breakTime->user_id){
                             //休憩時間
@@ -47,8 +53,10 @@
                             $minite=str_pad(floor($diffTime%3600/60),2,0,STR_PAD_LEFT);
                             $second=str_pad(floor($diffTime%60),2,0,STR_PAD_LEFT);
                             $totalBreakTime=$hour.':'.$minite.':'.$second;
+                            $arrStart[$breakTime->count]=$breakTime->start_time;
                         }
                     }
+                    $arrStartCount=count($arrStart);
                     $totalWorkTime=$workTime-$diffTime;
                     $hour=str_pad(floor($totalWorkTime/3600),2,0,STR_PAD_LEFT);
                     $minite=str_pad(floor($totalWorkTime%3600/60),2,0,STR_PAD_LEFT);
@@ -60,30 +68,15 @@
                 <td class="py-4 text-center w-1/6">{{$end}}</td>
                 <td class="py-4 text-center w-1/6">{{$totalBreakTime}}</td>
                 <td class="py-4 text-center w-1/6">{{$totalWorkTime}}</td>
-                
-                <td class="py-4 text-center w-1/6"><a class="px-4 py-2 bg-blue-500 rounded-md text-white" href="#{{$user->user_id}}">詳細</a></td>
-            </div>
+                <td class="py-4 text-center w-1/6">
+                    <form action="/editform" method="post">
+                        @csrf
+                        <input type="text" class="hidden" name="userId" value="{{$id}}">
+                        <input type="text" class="hidden" name="date" value="{{$date}}">
+                        <input type="submit" class="px-4 py-2 bg-blue-500 rounded-md text-white" value="詳細">
+                    </form>
+                </td>
             </tr>
-            <div id="{{$user->user_id}}" class="hidden target:block">
-                <div class="block w-full h-full bg-black/70 absolute top-0 left-0">
-                    <div class="flex flex-col mx-auto my-32 bg-white w-[40%] h-1/2">
-                        <a class="text-right px-4 py-2" href="#">✖︎</a>
-                        <form class="py-2" action="/update" method="post">
-                            @csrf
-                            <input type="hidden" name="name" value="{{$user->user_id}}">
-                            <input type="hidden" name="date" value="{{$date}}">
-                            <p class="mx-8">勤務開始：</p><input class="w-1/2 mx-auto my-4" type="datetime-local" name="startTime">
-                            <p class="mx-8">勤務終了：</p><input class="w-1/2 mx-auto my-4" type="datetime-local" name="endTime">
-                            
-                            <input class="px-4 py-2 mx-auto my-8 w-1/4 bg-blue-500 rounded-md text-white" type="submit" value="編集">
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
             @endforeach
         </table>
         <div class="my-8">
