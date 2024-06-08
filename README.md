@@ -31,7 +31,7 @@
 <img src="/ER_attends.png">
 <img src="/ER_breakTimes.png">
 <h1>環境構築</h1>
-<ul>
+<ol>
     <li>任意のフォルダに移動</li>
     <li>
         フォルダをローカルに保存<br>
@@ -63,4 +63,4 @@
     <li>
         localhostへアクセス
     </li>
-</ul>
+</ol>
